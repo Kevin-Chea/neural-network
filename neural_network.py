@@ -1,5 +1,7 @@
 from math_utils import sigmoid
 from layer import Layer
+from neuron import Neuron
+import pickle
 
 class Neural_Network():
     def __init__(self, layers=[]):
@@ -66,7 +68,68 @@ class Neural_Network():
                 
             avg_loss = total_loss / total_samples
             print(f"Epoch {epoch + 1}, Loss: {avg_loss}")
-                    
 
+    def save_model(self, filepath):
+        """
+        Save weights and bias in the specified file
+        
+        Params:
+        - filepath (str): path of the file which will contain data of the neural network
+        """
+        model_data = {
+            #"architecture": [len(layer.neuron) for layer in self.layers],
+            "layers": [
+                {
+                    "weights": [neuron.weights for neuron in layer.neurons],
+                    "biases": [neuron.bias for neuron in layer.neurons],
+                    "activations": [neuron.activation_function for neuron in layer.neurons],
+                    "derivatives": [neuron.derivative_activation_function for neuron in layer.neurons]
+                }
+                for layer in self.layers
+            ]
+        }
+        with open(filepath, "wb") as f:
+            pickle.dump(model_data, f)
+        print(f"Model saved in {filepath}")
+        
+    def load_model(filepath):
+        """
+        Load a complete model from a file
+        
+        Params:
+        - filepath (str): path of the file which contains data of the neural network
+        
+        Returns:
+        - Neural_Network: loaded model
+        """
+        with open(filepath, "rb") as f:
+            model_data = pickle.load(f)
+        
+        layers_data = model_data["layers"]
+        
+        layers = []
+        for layer_data in layers_data:
+            layer = Layer(0, 0)
+            neurons = []
+            for weights, bias, activation_function, derivative_activation_function in zip(
+              layer_data["weights"]  ,
+              layer_data["biases"],
+              layer_data["activations"],
+              layer_data["derivatives"]
+            ):
+                neuron = Neuron(0)
+                neuron.weights = weights
+                neuron.bias = bias
+                neuron.activation_function = activation_function
+                neuron.derivative_activation_function = derivative_activation_function
+                neurons.append(neuron)
+            layer.neurons = neurons
+            layers.append(layer)
+        
+        nn = Neural_Network(layers)
+        print(f"Loading model of neural network from {filepath}:")
+        print(nn)
+        return nn
+        
     def __str__(self):
         return "\n".join([f"Layer {i+1}: {layer}" for i, layer in enumerate(self.layers)])

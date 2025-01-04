@@ -25,3 +25,5 @@ nn.train(inputs, outputs, 50000, 0.1)
 for input in inputs:
     print(nn.forward(input))
 print(nn)
+# If you want to save the model, uncomment the following line and adapt the filepath if needed
+# nn.save_model("xor.pkl")
