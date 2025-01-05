@@ -91,7 +91,36 @@ class Neural_Network():
         with open(filepath, "wb") as f:
             pickle.dump(model_data, f)
         print(f"Model saved in {filepath}")
+    
+    @staticmethod
+    def load_layer(layer_data):
+        """
+        Create a layer from loaded layer data
         
+        Params:
+        - layer_data (dict): contains weights, biases, activations and derivatives
+        
+        Returns:
+        - Layer
+        """
+        layer = Layer(0, 0)
+        neurons = []
+        for weights, bias, activation_function, derivative_activation_function in zip(
+            layer_data["weights"]  ,
+            layer_data["biases"],
+            layer_data["activations"],
+            layer_data["derivatives"]
+        ):
+            neuron = Neuron(0)
+            neuron.weights = weights
+            neuron.bias = bias
+            neuron.activation_function = activation_function
+            neuron.derivative_activation_function = derivative_activation_function
+            neurons.append(neuron)
+        layer.neurons = neurons
+        return layer
+    
+    @staticmethod
     def load_model(filepath):
         """
         Load a complete model from a file
@@ -107,24 +136,7 @@ class Neural_Network():
         
         layers_data = model_data["layers"]
         
-        layers = []
-        for layer_data in layers_data:
-            layer = Layer(0, 0)
-            neurons = []
-            for weights, bias, activation_function, derivative_activation_function in zip(
-              layer_data["weights"]  ,
-              layer_data["biases"],
-              layer_data["activations"],
-              layer_data["derivatives"]
-            ):
-                neuron = Neuron(0)
-                neuron.weights = weights
-                neuron.bias = bias
-                neuron.activation_function = activation_function
-                neuron.derivative_activation_function = derivative_activation_function
-                neurons.append(neuron)
-            layer.neurons = neurons
-            layers.append(layer)
+        layers = [Neural_Network.load_layer(layer_data) for layer_data in layers_data]
         
         nn = Neural_Network(layers)
         print(f"Loading model of neural network from {filepath}:")
