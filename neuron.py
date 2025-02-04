@@ -1,12 +1,16 @@
 from random import random
-from math_utils import sigmoid, sigmoid_derivative, relu 
+from math_utils import sigmoid, sigmoid_derivative
+from math import sqrt
 
 class Neuron:
-    def __init__(self, nb_inputs, activation_function=sigmoid, derivative_activation_function=None):
-        self.weights = [random() for _ in range(nb_inputs)]
-        self.bias = random()
+    def __init__(self, nb_inputs, activation_function=sigmoid, derivative_activation_function=sigmoid_derivative):
+        # Xavier/Glorot initialization, adapted for sigmoid
+        limit = sqrt(6 / (nb_inputs + 1))
+        self.weights = [random() * 2 * limit - limit for _ in range(nb_inputs)]
+        
+        self.bias = 0  # Initialize bias to 0
         self.activation_function = activation_function
-        self.derivative_activation_function = derivative_activation_function or sigmoid_derivative
+        self.derivative_activation_function = derivative_activation_function
         
     def activate(self, inputs):
         self.inputs = inputs # Store inputs for backpropagation
@@ -16,7 +20,10 @@ class Neuron:
     
     def compute_gradient(self, error):
         # Local error
-        self.delta = error * self.derivative_activation_function(self.z)
+        if (self.derivative_activation_function is None):
+            self.delta = error
+        else:
+            self.delta = error * self.derivative_activation_function(self.z)
         # Weight gradients
         self.weight_gradients = [self.delta * x for x in self.inputs]
         self.bias_gradient = self.delta
