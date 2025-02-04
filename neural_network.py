@@ -1,4 +1,4 @@
-from math_utils import sigmoid
+from math_utils import sigmoid, sigmoid_derivative, categorical_loss_entropy
 from layer import Layer
 from neuron import Neuron
 import pickle
@@ -7,8 +7,8 @@ class Neural_Network():
     def __init__(self, layers=[]):
         self.layers = layers
         
-    def add_layer(self, nb_neurons, nb_inputs, activation_function=sigmoid):
-        self.layers.append(Layer(nb_neurons, nb_inputs, activation_function))
+    def add_layer(self, nb_neurons, nb_inputs, activation_function=sigmoid, derivative_function=sigmoid_derivative):
+        self.layers.append(Layer(nb_neurons, nb_inputs, activation_function, derivative_function))
     
     def forward(self, inputs):
         if not self.layers:
@@ -55,8 +55,8 @@ class Neural_Network():
                 for inputs, expected_outputs in zip(inputs_train, expected_outputs_train):
                     # Forward
                     outputs = self.forward(inputs)
-                    # Mean squarred error
-                    loss = sum((output - expected) ** 2 for expected, output in zip(expected_outputs, outputs))
+                    # Categorical entropy loss
+                    loss = categorical_loss_entropy(expected_outputs, outputs)
                     batch_loss += loss
                     # Backward
                     self.backward(expected_outputs)
