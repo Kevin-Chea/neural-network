@@ -139,8 +139,8 @@ class Neural_Network():
         layers = [Neural_Network.load_layer(layer_data) for layer_data in layers_data]
         
         nn = Neural_Network(layers)
-        print(f"Loading model of neural network from {filepath}:")
-        print(nn)
+        print(f"\nLoading model of neural network from {filepath}\n")
+        # print(nn)
         return nn
         
     def __str__(self):
