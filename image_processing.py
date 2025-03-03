@@ -6,6 +6,8 @@ import random
 
 image_base_path = "data/by_class/"
 
+NB_PREPROCESSED_IMAGES_PER_NUMBER = 1000
+
 def pre_process_image(path):
     img = Image.open(path).convert('L')
     img_resized = img.resize((28, 28))
@@ -63,9 +65,9 @@ def pre_process_and_save_images_of_n_to_pickle(n: int, output_file: str, limit: 
         pickle.dump(all_data, f)
 
 
-def pre_process_all_numbers(limit=1000):
+def pre_process_all_numbers():
     for i in range(0, 10):
-        pre_process_and_save_images_of_n_to_pickle(i, "train_" + str(i), limit)
+        pre_process_and_save_images_of_n_to_pickle(i, "train_" + str(i), NB_PREPROCESSED_IMAGES_PER_NUMBER)
 
 def load_batch_from_pickle(file_path: str, images_per_batch: int, batch_index: int):
     """
@@ -86,9 +88,11 @@ def load_batch_for_all_numbers(images_per_batch: int=100):
     expected_output = []
     
     label_counts = {i: 0 for i in range(10)}
+    batch_to_load_max_index = (NB_PREPROCESSED_IMAGES_PER_NUMBER // images_per_batch) - 1
+    index_to_load = random.randint(0, batch_to_load_max_index)
     for i in range(10):
         # 28 * 28 * 100 : image size * nb of images in a batch
-        data.extend(load_batch_from_pickle("train_" + str(i), images_per_batch, 0))
+        data.extend(load_batch_from_pickle("train_" + str(i), images_per_batch, index_to_load))
         expected_output.extend([i] * images_per_batch)
         label_counts[i] += images_per_batch
     # Shuffle
