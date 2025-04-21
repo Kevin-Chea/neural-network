@@ -32,4 +32,4 @@ def predict_all_numbers(nn):
 predict_all_numbers(nn)
 
 # If you want to save the model, uncomment the following line and adapt the filepath if needed
-# nn.save_model('ocr.pkl')
+nn.save_model('ocrV2.pkl')
