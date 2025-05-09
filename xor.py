@@ -22,8 +22,10 @@ outputs = [
 ]
 
 nn.train(inputs, outputs, 50000, 0.1)
+print("\n\nResults:")
 for input in inputs:
     print(f"For the input {input}, the network predicted {nn.forward(input)}")
+print("\n\nNeural network:")
 print(nn)
 # If you want to save the model, uncomment the following line and adapt the filepath if needed
 # nn.save_model("xor.pkl")
